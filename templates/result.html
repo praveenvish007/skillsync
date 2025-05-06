@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+<body>
+    <h1>Result</h1>
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% else %}
+        <p>Resume tailored successfully!</p>
+        <a href="{{ download_url }}" download>Download Tailored Resume</a>
+    {% endif %}
+    <br>
+    <a href="/">Upload Another</a>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Extraction</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .text-panel { 
+            background: #f5f5f5; 
+            padding: 15px; 
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .keyword-chip {
+            display: inline-block;
+            background: #e0f7fa;
+            padding: 3px 8px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        .btn {
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Verify Extracted Content</h1>
+    
+    <h3>From Your Resume:</h3>
+    <div class="text-panel">
+        <pre>{{ extracted_text }}</pre>
+    </div>
+    
+    <h3>Keywords Identified from Job Description:</h3>
+    <div>
+        {% for keyword in keywords %}
+        <span class="keyword-chip">{{ keyword }}</span>
+        {% endfor %}
+    </div>
+    
+    <form action="/optimize/" method="post" style="margin-top: 20px;">
+        <input type="hidden" name="session_id" value="{{ session_id }}">
+        <input type="hidden" name="job_description" value="{{ job_description }}">
+        <button type="submit" class="btn">Continue to Optimization</button>
+        <a href="/" class="btn" style="background: #f44336;">Upload New File</a>
+    </form>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Enhancer</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+<body>
+    <h1>Upload Your Resume</h1>
+    <form id="uploadForm" action="/process" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="resume">Resume (PDF or DOCX):</label>
+            <input type="file" id="resume" name="resume" accept=".pdf,.docx" required>
+        </div>
+        <div>
+            <label for="job_description">Job Description:</label>
+            <textarea id="job_description" name="job_description" rows="10" cols="50" required></textarea>
+        </div>
+        <button type="submit">Enhance Resume</button>
+    </form>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const resumeFile = document.getElementById('resume').files[0];
+            const jdText = document.getElementById('job_description').value.trim();
+            if (!resumeFile) {
+                e.preventDefault();
+                alert('Please select a resume file (PDF or DOCX).');
+            }
+            if (!jdText) {
+                e.preventDefault();
+                alert('Please enter a job description.');
+            }
+        });
+    </script>
+</body>
+</html>

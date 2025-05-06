@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error Occurred</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .error-box { background-color: #ffeeee; border: 1px solid #ffcccc; padding: 20px; border-radius: 5px; }
+        .btn { display: inline-block; padding: 10px 15px; background: #dc3545; color: white; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Error Processing Your Request</h1>
+    <div class="error-box">
+        <h3>{{ error }}</h3>
+        {% if "empty" in error.lower() %}
+        <p>Please check that your file:</p>
+        <ul>
+            <li>Is not password protected</li>
+            <li>Contains selectable text (not just scanned images)</li>
+            <li>Is in PDF or Word format</li>
+        </ul>
+        {% endif %}
+    </div>
+    <p><a href="/" class="btn">Try Again</a></p>
+</body>
+</html>
