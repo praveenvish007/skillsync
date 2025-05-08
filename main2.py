@@ -265,39 +265,6 @@ def extract_text_from_file(file_path: str, content_type: str) -> str:
         logger.error("Extraction error: %s", str(e))
         return ""
 
-def detect_headings(text: str) -> list:
-    """Detect headings based on Markdown and keywords."""
-    if not text.strip():
-        logger.error("Text for heading detection is empty")
-        return []
-    
-    lines = text.split('\n')
-    headings = []
-    heading_keywords = [
-        'profile', 'summary', 'skills', 'experience', 
-        'education', 'projects', 'certifications',
-        'work history', 'technical', 'academic'
-    ]
-    
-    for i, line in enumerate(lines):
-        line = line.strip()
-        if not line:
-            continue
-            
-        clean_line = re.sub(r'[#*_-]', '', line).strip()
-        is_heading = (
-            line.startswith('##') or
-            (any(keyword in clean_line.lower() for keyword in heading_keywords) and
-             len(clean_line.split()) <= 3 and
-             clean_line == clean_line.title())
-        )
-        
-        if is_heading:
-            headings.append((i, clean_line))
-    
-    logger.info("Detected headings: %s", headings)
-    return headings
-
 async def save_uploaded_file(upload_file: UploadFile, directory: str) -> str:
     os.makedirs(directory, exist_ok=True)
     file_path = os.path.join(directory, f"{uuid.uuid4()}_{upload_file.filename}")
@@ -577,8 +544,23 @@ def create_pdf(styled_content, session_id):
     
     return pdf_path
 
+# @app.get("/", response_class=HTMLResponse)
+# async def upload_form(request: Request):
+#     return templates.TemplateResponse("upload.html", {"request": request})
+
 @app.get("/", response_class=HTMLResponse)
 async def upload_form(request: Request):
+    """Render upload form and clear generated_resumes folder."""
+    folder_path = "generated_resumes"
+    try:
+        os.makedirs(folder_path, exist_ok=True)
+        for filename in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                logger.info("Deleted: %s", file_path)
+    except Exception as e:
+        logger.error("Error clearing %s: %s", folder_path, str(e))
     return templates.TemplateResponse("upload.html", {"request": request})
 
 @app.post("/process")
@@ -665,12 +647,6 @@ async def process_resume(
             detail=f"An error occurred: {str(e)}"
         )
 
-async def cleanup_files(session_id: str):
-    """Clean up generated files after download"""
-    pdf_path = os.path.join("generated_resumes", f"professional_resume_{session_id}.pdf")
-    if os.path.exists(pdf_path):
-        os.remove(pdf_path)
-
 @app.get("/download/{session_id}")
 async def download_resume(session_id: str):
     file_path = os.path.join("generated_resumes", f"professional_resume_{session_id}.pdf")
@@ -682,6 +658,19 @@ async def download_resume(session_id: str):
         )
     return RedirectResponse("/")
 
+
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
+
+@app.get("/favicon.ico")
+async def favicon():
+    """Handle favicon.ico request to suppress 404."""
+    logger.info("Favicon requested, returning empty response")
+    return {"detail": "No favicon available"}, 404
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    import os
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port, workers=2)
